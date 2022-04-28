@@ -141,7 +141,7 @@ class Main {
 			var grafo = new LinkedList();
 			var x:Elemento = {
 				"x": 1,
-				"l": [2, 3, 7]
+				"l": [2, 3]
 			}
 
 			grafo.agregar_nodo(x);
@@ -155,35 +155,35 @@ class Main {
 
 			var x:Elemento = {
 				"x": 7,
-				"l": [1, 3]
+				"l": [3, 4, 6]
 			}
 
 			grafo.agregar_nodo(x);
 
 			var x:Elemento = {
 				"x": 3,
-				"l": [1, 7, 5, 4]
+				"l": [1, 7, 4]
 			}
 
 			grafo.agregar_nodo(x);
 
 			var x:Elemento = {
 				"x": 5,
-				"l": [2, 3, 6]
+				"l": [2, 6]
 			}
 
 			grafo.agregar_nodo(x);
 
 			var x:Elemento = {
 				"x": 6,
-				"l": [5, 4]
+				"l": [5, 4, 7]
 			}
 
 			grafo.agregar_nodo(x);
 
 			var x:Elemento = {
 				"x": 4,
-				"l": [3, 6]
+				"l": [3, 6, 7]
 			}
 
 			grafo.agregar_nodo(x);
