@@ -12,9 +12,7 @@ class Bolsa implements Coleccion {
 		var aux = false;
 
 		if (this.bolsita.contains(element)) {
-			while (this.bolsita.remove(element)) {
-				continue;
-			}
+			this.bolsita.remove(element);
 			aux = true;
 		}
 
