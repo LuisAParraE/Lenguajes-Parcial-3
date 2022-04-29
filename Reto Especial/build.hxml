@@ -1,0 +1,9 @@
+-cp src
+-D analyzer-optimize
+-main Main
+
+--run Main
+15
+
+
+
