@@ -1,0 +1,158 @@
+_______________PARTE A______________
+
+Comenzamos la Evaluación normal en:
+
+misteriosa "abc" (gen 1)
+---------- Aplicamos Def. misteriosa----------------
+foldr what (const []) "abc" (gen 1)
+---------- Aplicamos Def. foldr----------------
+what "a" $ foldr what (const []) "bc" (gen 1)
+---------- Aplicamos Def. gen -----------------
+what "a" $ foldr what (const []) "bc" 1:gen 2
+---------- Aplicamos Def. what --------------------
+("a",1) : foldr what (const []) "bc" gen 2
+---------- Aplicamos Def. foldr ---------------------
+("a",1) : what "b" $ foldr what (const []) "c" gen 2
+---------- Aplicamos Def. gen  -------------------
+("a",1) : what "b" $ foldr what (const []) "c" 2:gen 3
+---------- Aplicamos Def. what ---------------------------
+("a", 1) : ("b", 2) : foldr what (const []) "c" gen 3
+---------- Aplicamos Def. foldr -----------------------------
+("a", 1) : ("b", 2) : what "c" $ foldr what (const []) [] gen 3
+---------- Aplicamos Def. gen ----------------------------
+("a", 1) : ("b", 2) : what "c" $ foldr what (const []) [] 3:gen 4
+---------- Aplicamos Def. what -----------------------
+("a", 1) : ("b", 2) : ("c", 3) : foldr what (const []) [] gen 4
+---------- Aplicamos Def. foldr -----------------------
+("a", 1) : ("b", 2) : ("c", 3) : (const []) gen 4
+---------- Aplicamos Def. const --------------------------
+("a", 1) : ("b", 2) : ("c", 3) : []
+---------- evaluacion -----------------------------------
+[("a", 1), ("b", 2), ("c", 3)]
+
+Comenzamos la Evaluación aplicativa en:
+
+misteriosa "abc" (gen 1)
+------- Aplicamos Def. misteriosa ------------------
+foldr what (const []) "abc" (gen 1)
+------- Aplicamos Def. foldr ----------------------
+what "a" $ foldr what (const []) "bc" (gen 1)
+------- Aplicamos Def. foldr ---------------------
+what "a" $ what "b" $ foldr what (const []) "c" (gen 1)
+------- Aplicamos Def. foldr ----------------------
+what "a" $ what "b" $ what "c" $ foldr what (const []) [] (gen 1)
+------- Aplicamos Def. foldr -----------------------
+what "a" $ what "b" $ what "c" $ (const []) (gen 1)
+------- Aplicamos Def. gen ----------------------
+what "a" $ what "b" $ what "c" $ (const []) (1:gen 2)
+------- Aplicamos Def. what ---------------------
+("a", 1) : what "b" $ what "c" $ (const []) gen 2
+------- Aplicamos Def. gen -----------------------
+("a", 1) : what "b" $ what "c" $ (const []) (2:gen 3)
+------- Aplicamos Def. what -------------------------
+("a", 1) : ("b", 2) : what "c" $ (const []) gen 3
+------- Aplicamos Def. gen --------------------------
+("a", 1) : ("b", 2) : what "c" $ (const []) (3:gen 4)
+------- Aplicamos Def. what --------------------------
+("a", 1) : ("b", 2) : ("c", 3) : const [] gen 4
+------- Aplicamos Def. const --------------------------
+("a", 1) : ("b", 2) : ("c", 3) : []
+------- evaluacion ----------------------------------
+[("a", 1), ("b", 2), ("c", 3)]
+
+
+_______________PARTE B______________
+
+foldA :: (a -> b -> b -> b) -> b -> Arbol a -> b
+foldA _ e Hoja = e
+foldA f e (Rama x arbolI arbolD) = f x (foldA f e arbolI) (foldA f e arbolD)
+
+_______________PARTE C______________
+
+Comenzamos la Evaluación normal en:
+
+sospechosa arbolito (genA 1)
+-------- Aplicamos Def de sospechosa ---------------------
+foldA whatTF (const Hoja) arbolito (genA 1)
+-------- Aplicamos Def de arbolito ------------------------
+foldA whatTF (const Hoja) (Rama 'a' (Rama 'b' Hoja (Rama 'c' Hoja Hoja)) Hoja) (genA 1)
+-------- Aplicamos Def de foldA --------------------------
+whatTF 'a' (foldA whatTF (const Hoja) (Rama 'b' Hoja (Rama 'c' Hoja Hoja))) (foldA whatTF (const Hoja) Hoja) (genA 1)
+-------- Aplicamos Def genA -----------------------------
+whatTF 'a' (foldA whatTF (const Hoja) (Rama 'b' Hoja (Rama 'c' Hoja Hoja))) (foldA whatTF (const Hoja) Hoja) (Rama 1 (genA 2)(genA 3))
+-------- Aplicamos Def whatTF --------------------------
+Rama ('a',1) ((foldA whatTF (const Hoja) (Rama 'b' Hoja (Rama 'c' Hoja Hoja))) (genA 2)) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA ---------------------------
+Rama ('a',1) ((whatTF 'b' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja)))) (genA 2)) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def genA ---------------------------
+Rama ('a',1) ((whatTF 'b' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja)))) (Rama 2 (genA 3)(genA 4))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def whatTF -------------------------
+Rama ('a',1) ((Rama ('b',2) ((foldA whatTF (const Hoja) Hoja) (genA 3) ) ((foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja)) (genA 4)))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA --------------------------
+Rama ('a',1) ((Rama ('b',2) (const Hoja (genA 3) ) ((foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja)) (genA 4)))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def const ----------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja ((foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja)) (genA 4)))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA -----------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (whatTF 'c' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) Hoja) (genA 4)))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def genA -------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (whatTF 'c' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) Hoja) (Rama 4 (genA 5) (genA 6))))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def whatTF -----------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) ((foldA whatTF (const Hoja) Hoja) (genA 5)) ((foldA whatTF (const Hoja) Hoja) (genA 6)) ))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA -------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) (const Hoja (genA 5)) ((foldA whatTF (const Hoja) Hoja) (genA 6)) ))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def const ------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) Hoja ((foldA whatTF (const Hoja) Hoja) (genA 6)) ))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA -------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) Hoja (const Hoja (genA 6)) ))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def const ------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) Hoja Hoja ))) ((foldA whatTF (const Hoja) Hoja) (genA 3))
+-------- Aplicamos Def foldA ------------------------------
+Rama ('a',1) ((Rama ('b',2) Hoja (Rama ('c',4) Hoja Hoja ))) (const Hoja (genA 3))
+-------- Aplicamos Def const ------------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (Rama ('c',4) Hoja Hoja )) Hoja
+
+
+Comenzamos la Evaluación aplicativa en:
+
+
+sospechosa arbolito (genA 1)
+-------- Aplicamos Def de arbolito-----------------------
+sospechosa (Rama 'a' (Rama 'b' Hoja (Rama 'c' Hoja Hoja)) Hoja) (genA 1)
+-------- Aplicamos Def sospechosa----------------------------
+foldA whatTF (const Hoja) (Rama 'a' (Rama 'b' Hoja (Rama 'c' Hoja Hoja)) Hoja) (genA 1)
+-------- Aplicamos Def de foldA----------------------
+whatTF 'a' (foldA whatTF (const Hoja) (Rama 'b' Hoja (Rama 'c' Hoja Hoja))) (foldA whatTF (const Hoja) Hoja) (genA 1)
+-------- Aplicamos Def de foldA--------------------
+whatTF 'a' (whatTF 'b' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja))) (foldA whatTF (const Hoja) Hoja) (genA 1)
+-------- Aplicamos Def de foldA -----------------------
+whatTF 'a' (whatTF 'b' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja))) (const Hoja) (genA 1)
+-------- Aplicamos Def de foldA -------------------------
+whatTF 'a' (whatTF 'b' (const Hoja) (foldA whatTF (const Hoja) (Rama 'c' Hoja Hoja))) (const Hoja) (genA 1)
+-------- Aplicamos Def de foldA --------------------------
+whatTF 'a' (whatTF 'b' (const Hoja) (whatTF 'c' (foldA whatTF (const Hoja) Hoja) (foldA whatTF (const Hoja) Hoja))) (const Hoja) (genA 1)
+-------- Aplicamos Def de foldA ------------------------------
+whatTF 'a' (whatTF 'b' (const Hoja) (whatTF 'c' (const Hoja) (foldA whatTF (const Hoja) Hoja))) (const Hoja) (genA 1)
+-------- Aplicamos Def de foldA -------------------------------
+whatTF 'a' (whatTF 'b' (const Hoja) (whatTF 'c' (const Hoja) (const Hoja))) (const Hoja) (genA 1)
+-------- Aplicamos Def de genA ---------------------------
+whatTF 'a' (whatTF 'b' (const Hoja) (whatTF 'c' (const Hoja) (const Hoja))) (const Hoja) (Rama 1 (genA 2) (genA 3))
+-------- Aplicamos Def whatTF ---------------------------
+Rama ('a',1) (whatTF 'b' (const Hoja) (whatTF 'c' (const Hoja) (const Hoja)) (genA 2)) (const Hoja (genA 3))
+-------- Aplicamos Def de genA ------------------------------
+Rama ('a',1) (whatTF 'b' (const Hoja) (whatTF 'c' (const Hoja) (const Hoja)) (Rama 2 (genA 3) (genA 4))) (const Hoja (genA 3))
+-------- Aplicamos Def whatTF ---------------------------------
+Rama ('a',1) (Rama ('b',2) (const Hoja (genA 3)) (whatTF 'c' (const Hoja) (const Hoja) (genA 4))) (const Hoja (genA 3))
+-------- Aplicamos Def de const -----------------------------
+Rama ('a',1) (Rama ('b',2) (const Hoja (genA 3)) (whatTF 'c' (const Hoja) (const Hoja) (genA 4))) Hoja
+-------- Aplicamos Def de const ------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (whatTF 'c' (const Hoja) (const Hoja) (genA 4))) Hoja
+-------- Aplicamos Def de genA --------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (whatTF 'c' (const Hoja) (const Hoja) (Rama 4 (genA 5) (genA 6) ))) Hoja
+-------- Aplicamos Def whatTF ----------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (Rama ('c',4) (const Hoja (genA 5)) (const Hoja (genA 6)))) Hoja
+-------- Aplicamos Def de const ------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (Rama ('c',4) Hoja (const Hoja (genA 6)))) Hoja
+-------- Aplicamos Def de const ---------------------------------
+Rama ('a',1) (Rama ('b',2) Hoja (Rama ('c',4) Hoja Hoja)) Hoja
+
+
